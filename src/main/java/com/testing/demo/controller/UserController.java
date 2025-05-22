@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -29,11 +30,14 @@ public class UserController {
         CreateUserResponse response = userService.createUser(userDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    @RequestMapping(value = APIConstants.CREATE_ACCESS_TOKEN, method = RequestMethod.GET)
+    @RequestMapping(value = APIConstants.CREATE_ACCESS_TOKEN, method = RequestMethod.POST)
     public ResponseEntity<?> generateAccessToken(@RequestParam String userName,@RequestParam String password) {
         logger.info("Request Started In generateAccessToken |userName={}  |password={}",userName,password);
         JwtService service = new JwtService();
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+        String token = service.generateToken(userName);
+        logger.info("Request Completed In generateAccessToken |token={}",token);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("token", token));
+
     }
     @RequestMapping(value = APIConstants.GET_ALL_USERS, method = RequestMethod.GET)
     public ResponseEntity<?> allUsers() {
